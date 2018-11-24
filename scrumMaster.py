@@ -15,10 +15,12 @@ def launch():
     speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. What's your project?"
     return question(speech_text).reprompt(speech_text)
 
+
 @ask.intent('NewProjectIntent')
 def get_new_project():
     speech_text = 'Please confirm the name of your new project.'
     return statement(speech_text)
+
 
 @ask.intent('ProjectNameIntent')
 def new_project(Text):
@@ -28,6 +30,7 @@ def new_project(Text):
         speech_text = 'You said: {}, what a great name, shall we start the meeting?'.format(Text)
         # add Text to the array
     return question(speech_text).reprompt(speech_text)
+
 
 #STAND UP MEETING
 #Alexa, where's my scrum master
@@ -45,6 +48,7 @@ def take_attendance(self):
     for i in range(team_members_size):
         attendance(i)
     return 0
+
 
 @ask.intent("AttendanceIntent")
 def attendance(self, i):
