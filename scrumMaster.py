@@ -31,6 +31,7 @@ def new_project(Text):
         # add Text to the array
     return question(speech_text).reprompt(speech_text)
 
+#set up project
 @ask.intent('TeamSizeIntent', convert = {"answer": int})
 def ask_team_size():
     speech_text = "How many in the team?"
@@ -41,7 +42,6 @@ def ask_team_size():
 def hello_world():
     speech_text = 'Hello world'
     return statement(speech_text)
-
 
 @ask.intent('AMAZON.HelpIntent')
 def help():
