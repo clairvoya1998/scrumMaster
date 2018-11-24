@@ -13,19 +13,32 @@ logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 @ask.launch
 def launch():
     speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. What's your project?"
-    return question(speech_text).reprompt(speech_text).simple_card('HelloWorld', speech_text)
+    return question(speech_text).reprompt(speech_text)
 
+@ask.intent('NewProjectIntent')
+def get_new_project():
+    speech_text = 'Please confirm the name of your new project.'
+    return statement(speech_text)
+
+@ask.intent('ProjectNameIntent')
+def new_project(Text):
+    if ((Text) in array):
+        speech_text = "I have found an existed project, do you want to continue that session?"
+    else:
+        speech_text = 'You said: {}, what a great name, shall we start the meeting?'.format(Text)
+        # add Text to the array
+    return question(speech_text).reprompt(speech_text)
 
 @ask.intent('HelloWorldIntent')
 def hello_world():
     speech_text = 'Hello world'
-    return statement(speech_text).simple_card('HelloWorld', speech_text)
+    return statement(speech_text)
 
 
 @ask.intent('AMAZON.HelpIntent')
 def help():
     speech_text = 'You can say hello to me!'
-    return question(speech_text).reprompt(speech_text).simple_card('HelloWorld', speech_text)
+    return question(speech_text).reprompt(speech_text)
 
 
 @ask.session_ended
