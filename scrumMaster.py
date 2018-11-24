@@ -101,27 +101,6 @@ def no_intent():
 
 
 
-#STAND UP MEETING
-#Alexa, where's my scrum master
-#Hello, what's your project
-#projectName
-#IF NOT END OF SPRINT
-#i THINK it's time for a stand up meeting
-
-def take_attendance():
-    for i in range(team_size):
-        attendance(i)
-    return 0
-
-@ask.intent("AttendanceIntent")
-def attendance(i):
-    speech_text = "<p>{}?</p>".format(team_members[i])
-
-    # check user says "Here"
-    # else "Oh no. user is not here."
-    return question(speech_text)
-
-
 @ask.intent('SprintDateIntent')
 def sprint_update():
     days_left = 5 # sprint end date - current date
