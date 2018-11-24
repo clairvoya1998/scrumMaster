@@ -50,11 +50,19 @@ def take_attendance(self):
 
 
 @ask.intent("AttendanceIntent")
-def attendance(self, i):
-    speech_text = "<p>{}?</p>".format(team_members[i])
-    # check user says "Here"
-    # else "Oh no. user is not here."
+def attendance(i):
+    speech_text = "Is <p>{}</p> here?".format(team_members[i])
     return question(speech_text)
+
+
+@ask.intent('AMAZON.YesIntent')
+def yes_intent():
+    return statement("Hi")
+
+
+@ask.intent('AMAZON.NoIntent')
+def no_intent():
+    return statement("What a shame.")
 
 
 @ask.intent('SprintDateIntent')
