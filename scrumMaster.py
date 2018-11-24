@@ -64,11 +64,11 @@ def start_stand_up():
 def take_attendance(self):
     for i in range(team_members_size):
         attendance(i)
-     return 0
+    return 0
 
 @ask.intent("AttendanceIntent")
 def attendance(self, i):
-    speech_text = "<p>{}</p>".format(team_members[i])
+    speech_text = "<p>{}?</p>".format(team_members[i])
     # check user says "Here"
     # else "Oh no. user is not here."
     return question(speech_text)
@@ -78,7 +78,7 @@ def attendance(self, i):
 def sprint_update():
     days_left = 5 # sprint end date - current date
     tasks_left = 5
-    return statement('There are' + days_left + 'days left in the sprint and' + tasks_left + 'tasks left to accomplish')
+    return question('There are' + days_left + 'days left in the sprint and' + tasks_left + 'tasks left to accomplish')
 
 
 def ask_team_about_work():
