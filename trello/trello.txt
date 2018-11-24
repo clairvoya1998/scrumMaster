@@ -1,0 +1,92 @@
+***
+Get board data: /boards/{id}
+https://api.trello.com/1/boards/5bf94119b7c0ff5b494d440a/
+lists?key={KEY}token={TOKEN}
+
+***
+Get members: /boards/{id}/members
+https://api.trello.com/1/boards/5bf94119b7c0ff5b494d440a/members
+/?key={KEY}token={TOKEN}
+[{"id":"5bf93fcf6c1a3a2446b3d235","url":"https://trello.com/villekuosmanen1"}]
+
+***
+Get cards: /boards/{id}/cards
+  ?fields=name,url
+
+[{
+  "id":"5bf9437c8dbdff5599c8690e",
+  "name":"Alexa can call developers by name",
+  "url":"https://trello.com/c/NRdwJcnE/1-alexa-can-call-developers-by-name"
+},
+{
+  "id":"5bf94389f3f76a44299334d0",
+  "name":"Alexa can add new cards to trello",
+  "url":"https://trello.com/c/4BkWxVgb/2-alexa-can-add-new-cards-to-trello"
+}]
+
+***
+Get data on one card: /cards/{id}
+https://api.trello.com/1/cards/
+5bf9437c8dbdff5599c8690e/?key={KEY}token={TOKEN}
+
+{
+  "id":"5bf9437c8dbdff5599c8690e","
+  badges":{
+    "votes":0,
+    "attachmentsByType":{
+      "trello":{"board":0,"card":0}
+    },
+    "viewingMemberVoted":false,
+    "subscribed":false,
+    "fogbugz":"",
+    "checkItems":0,
+    "checkItemsChecked":0,
+    "comments":0,
+    "attachments":0,
+    "description":false,
+    "due":null,
+    "dueComplete":false
+  },
+  "checkItemStates":[],
+  "closed":false,
+  "dueComplete":false,
+  "dateLastActivity":"2018-11-24T12:26:36.941Z",
+  "desc":"",
+  "descData":null,
+  "due":null,
+  "email":null,
+  "idBoard":"5bf94119b7c0ff5b494d440a",
+  "idChecklists":[],
+  "idList":"5bf94330f69be717f2c19d8f",
+  "idMembers":[],
+  "idMembersVoted":[],
+  "idShort":1,
+  "idAttachmentCover":null,
+  "labels":[],
+  "idLabels":[],
+  "manualCoverAttachment":false,
+  "name":"Alexa can call developers by name",
+  "pos":65535,
+  "shortLink":"NRdwJcnE",
+  "shortUrl":"https://trello.com/c/NRdwJcnE",
+  "subscribed":false,
+  "url":"https://trello.com/c/NRdwJcnE/1-alexa-can-call-developers-by-name"
+}
+
+Get data on a checklist's card: /checklists/{id}
+
+{"id":"5bf943a09fb46734f6d430f2",
+"name":"Tasks","idBoard":"5bf94119b7c0ff5b494d440a",
+"idCard":"5bf94389f3f76a44299334d0",
+"pos":16384,
+"checkItems":[{
+  "idChecklist":"5bf943a09fb46734f6d430f2",
+  "state":"complete",
+  "id":"5bf943d6859e806a2ce3daee",
+  "name":"Connect to Trello using the REST API",
+  "nameData":null,
+  "pos":17087},
+  {"idChecklist":"5bf943a09fb46734f6d430f2",
+  "state":"incomplete","id":"5bf94410d64399281336f5c1",
+  "name":"Teach Alexa to recognise the said user stories",
+  "nameData":null,"pos":34347},{"idChecklist":"5bf943a09fb46734f6d430f2","state":"incomplete","id":"5bf94435577c65140850a4c1","name":"Create an AWS Lambda to add new user story to Trello","nameData":null,"pos":51690}]}
