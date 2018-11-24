@@ -1,4 +1,27 @@
 {
+  "intents": [
+    {
+      "intent": "NewProjectIntent"
+    },
+    {
+      "intent": "ProjectNameIntent"
+    },
+    {
+      "intent": "StandUpMeetingIntent",
+    },
+    {
+      "intent": "AMAZON.HelpIntent"
+    },
+    {
+      "intent": "AMAZON.StopIntent"
+    },
+    {
+      "intent": "AMAZON.CancelIntent"
+    }
+  ]
+}
+
+{
     "intents": [
         {
         "intent": "SearchIntent",
