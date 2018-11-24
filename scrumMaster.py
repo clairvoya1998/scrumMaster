@@ -53,13 +53,16 @@ def start_stand_up():
     speech_text = "Great. It's time for the daily stand up. Let's take attendance."
     return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
 
+def take_attendance(self):
+    for i in range(team_members_size):
+        attendance(i)
+     return 0
 
 @ask.intent('AttendanceIntent')
-def attendance():
-    for i in range(team_members_size):
-        speech_text = "<p>{}</p>".format(team_members[i])
-        # check user says "Here"
-        # else "Oh no. user is not here."
+def attendance(self, i):
+    speech_text = "<p>{}</p>".format(team_members[i])
+    # check user says "Here"
+    # else "Oh no. user is not here."
     return question(speech_text)
 
 
