@@ -9,6 +9,8 @@ app = Flask(__name__)
 ask = Ask(app, "/")
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
+team_size = 0
+team_members = [] 
 
 @ask.launch
 def launch():
@@ -33,9 +35,6 @@ def new_project(Text):
 
 
 #STAND UP MEETING
-#Alexa, where's my scrum master
-#Hello, what's your project
-#projectName
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
 @ask.intent('StandUpMeetingIntent')
@@ -45,7 +44,7 @@ def start_stand_up():
     return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
 
 def take_attendance(self):
-    for i in range(team_members_size):
+    for i in range(team_size):
         attendance(i)
     return 0
 
@@ -66,7 +65,7 @@ def sprint_update():
 
 
 def ask_team_about_work():
-    for i in range(team_members_size):
+    for i in range(team_size):
         ask_about_yesterday(i)
         ask_about_today(i)
     return 0
