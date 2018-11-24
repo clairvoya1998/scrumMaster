@@ -1,0 +1,37 @@
+{
+  "types": [
+    {
+      "name": "YES_NO_SLOT",
+      "values": [
+        {
+          "id": "TRUE",
+          "name": {
+            "value": "yes",
+            "synonyms": [
+              "yep",
+              "present",
+              "yeah",
+              "here",
+              "hell yeah",
+              "you know it"
+              "of course",
+              "uhuh"
+            ]
+          }
+        },
+        {
+          "id": "FALSE",
+          "name": {
+            "value": "no",
+            "synonyms": [
+              "nope",
+              "not here",
+              "they are late",
+              "nah"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
