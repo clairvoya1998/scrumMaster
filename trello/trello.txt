@@ -30,8 +30,8 @@ https://api.trello.com/1/cards/
 5bf9437c8dbdff5599c8690e/?key={KEY}token={TOKEN}
 
 {
-  "id":"5bf9437c8dbdff5599c8690e","
-  badges":{
+  "id":"5bf9437c8dbdff5599c8690e",
+  "badges":{
     "votes":0,
     "attachmentsByType":{
       "trello":{"board":0,"card":0}
