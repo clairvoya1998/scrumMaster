@@ -9,6 +9,8 @@ app = Flask(__name__)
 ask = Ask(app, "/")
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
+team_members_size = 0
+
 
 @ask.launch
 def launch():
@@ -27,6 +29,12 @@ def new_project(Text):
     else:
         speech_text = 'You said: {}, what a great name, shall we start the meeting?'.format(Text)
         # add Text to the array
+    return question(speech_text).reprompt(speech_text)
+
+@ask.intent('TeamSizeIntent', convert = {"answer": int})
+def ask_team_size():
+    speech_text = "How many in the team?"
+    team_members_size = answer
     return question(speech_text).reprompt(speech_text)
 
 @ask.intent('HelloWorldIntent')
@@ -53,13 +61,16 @@ def start_stand_up():
     speech_text = "Great. It's time for the daily stand up. Let's take attendance."
     return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
 
-
-@ask.intent('AttendanceIntent')
-def attendance():
+def take_attendance(self):
     for i in range(team_members_size):
-        speech_text = "<p>{}</p>".format(team_members[i])
-        # check user says "Here"
-        # else "Oh no. user is not here."
+        attendance(i)
+     return 0
+
+@ask.intent("AttendanceIntent")
+def attendance(self, i):
+    speech_text = "<p>{}</p>".format(team_members[i])
+    # check user says "Here"
+    # else "Oh no. user is not here."
     return question(speech_text)
 
 
