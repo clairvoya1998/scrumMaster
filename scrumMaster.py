@@ -22,6 +22,8 @@ obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
 archieve_info = pickle.loads(raw_data)
 
+SECRET_STATE = "";
+
 
 
 standup_meeting = False
@@ -54,11 +56,49 @@ def new_project(Text):
     return question(speech_text).reprompt(speech_text)
 
 
+
+
+
+
+
+def get_dialog_state():
+    return SECRET_STATE
+
 def get_name():
     if (team_counter != team_size):
         temp = team_members[team_counter]
         name_counter = team_counter + 1
         return temp
+
+@ask.intent('StandUpMeetingIntent')
+def start_stand_up():
+
+    SECRET_STATE = "ATTENDANCE"
+
+    #standup_meeting = True
+    speech_text = "Great. It's time for the daily stand up. Let's take attendance. " + get_name() + "?"
+    return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
+
+@ask.intent('AMAZON.YesIntent')
+def yes_intent():
+    if SECRET_STATE != "ATTENDANCE":
+        return question();
+    else:
+
+        return statement("Hi")
+
+
+@ask.intent('AMAZON.NoIntent')
+def no_intent():
+    return statement("What a shame.")
+
+
+
+
+
+
+
+
 
 
 #STAND UP MEETING
@@ -68,35 +108,10 @@ def get_name():
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
 
-def get_dialog_state():
-    return session['dialogState']
-
-@ask.intent('StandUpMeetingIntent')
-def start_stand_up():
-
-    dialog_state = get_dialog_state()
-    if dialog_state != "COMPLETED":
-        return delegate()
-
-    for x in range(0, team_size):
-        attendance(x)
-    #standup_meeting = True
-    speech_text = "Great. It's time for the daily stand up. Let's take attendance."
-    return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
-
 def take_attendance():
     for i in range(team_size):
         attendance(i)
     return 0
-
-@ask.intent('AMAZON.YesIntent')
-def yes_intent():
-    return statement("Hi")
-
-
-@ask.intent('AMAZON.NoIntent')
-def no_intent():
-    return statement("What a shame.")
 
 @ask.intent("AttendanceIntent")
 def attendance(i):
