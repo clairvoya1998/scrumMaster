@@ -1,11 +1,9 @@
-# board = {id: int, lists: {<id>: name, ...}}
-
 import requests
 import json
 
 URL_AUTH = "key=d51bef30a16e2cad69ad5c5878052378&token=74917a16e0990241b66b78172b86317fed00acbb3e9f5afb3b2e30585f6d3ee2"
 
-def getNumberOfTasksInSprint(memberId, board):
+def getNumberOfTasksInSprint(memberId):
     tasksInSprint = 0
 
     # Get all cards the member is on
@@ -15,7 +13,7 @@ def getNumberOfTasksInSprint(memberId, board):
 
     for card in cards:
         print(card)
-        if board["lists"][card["idList"]] == "Sprint backlog":
+        if card["idList"] == "5bf94330f69be717f2c19d8f":    # hard-coded, Sprint Backlog
             checklistId = card["idChecklists"][0]
             #print(checklistId)
             url = "https://api.trello.com/1/checklists/" + checklistId + "?" + URL_AUTH
@@ -29,6 +27,7 @@ def getNumberOfTasksInSprint(memberId, board):
 
 # Adding a new user story:
     # add user story
+    # Assign (one) person to the user story
     # add tasks (one by one)
 
 # dueDate: dd/mm/yyyy
