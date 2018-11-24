@@ -9,8 +9,6 @@ app = Flask(__name__)
 ask = Ask(app, "/")
 logging.getLogger('flask_ask').setLevel(logging.DEBUG)
 
-team_members_size = 0
-
 
 @ask.launch
 def launch():
@@ -30,24 +28,6 @@ def new_project(Text):
         speech_text = 'You said: {}, what a great name, shall we start the meeting?'.format(Text)
         # add Text to the array
     return question(speech_text).reprompt(speech_text)
-
-#set up project
-@ask.intent('TeamSizeIntent', convert = {"answer": int})
-def ask_team_size():
-    speech_text = "How many in the team?"
-    team_members_size = answer
-    return question(speech_text).reprompt(speech_text)
-
-@ask.intent('HelloWorldIntent')
-def hello_world():
-    speech_text = 'Hello world'
-    return statement(speech_text)
-
-@ask.intent('AMAZON.HelpIntent')
-def help():
-    speech_text = 'You can say hello to me!'
-    return question(speech_text).reprompt(speech_text)
-
 
 #STAND UP MEETING
 #Alexa, where's my scrum master
@@ -98,6 +78,19 @@ def ask_about_yesterday(self, i):
 def ask_about_today(self, i):
     speech_text = format(team_members[i]) + 'what are you going to do today?'
     return question(speech_text)
+
+
+@ask.intent('HelloWorldIntent')
+def hello_world():
+    speech_text = 'Hello world'
+    return statement(speech_text)
+
+
+@ask.intent('AMAZON.HelpIntent')
+def help():
+    speech_text = 'You can say hello to me!'
+    return question(speech_text).reprompt(speech_text)
+
 
 @ask.session_ended
 def session_ended():
