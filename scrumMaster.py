@@ -24,6 +24,12 @@ def get_new_project():
     return statement(speech_text)
 
 
+@ask.intent('getMemberIntent')
+def get_new_member():
+    speech_text = 'Please say the name of a new member'
+    return statement(speech_text)
+
+
 @ask.intent('ProjectNameIntent')
 def new_project(Text):
     if ((Text) in array):
