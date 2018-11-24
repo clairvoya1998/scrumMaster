@@ -81,6 +81,7 @@ def ask_team_about_work():
 
 @ask.intent('AskAboutYesterdayIntent')
 def ask_about_yesterday(self, i):
+    #if(team_members[i].hasDoneNothing()) return question(format(team_members[i] + 'I guess you did nothing yesterday')
     speech_text = format(team_members[i]) + 'what did you do yesterday?'
     return question(speech_text)
 
