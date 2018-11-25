@@ -7,9 +7,9 @@ Hey. It's me, Alexa, your Scrummy Master.
 
     User: Alexa, launch scrum life
 
-    Alexa: Hey, I’m Alexa, your scrum master. What project would you like to work on?
+    Alexa: Hey, I’m Alexa, your scrum master. What project would you like to work on? For example, the project name is "the project"
 
-    User: Alexa*
+    User: The project name is Alexa*
 
     Alexa: Would you like a stand up meeting or design meeting?
   
