@@ -13,7 +13,8 @@ Hey. It's me, Alexa, your Scrummy Master.
 
     Alexa: Would you like a stand up meeting or design meeting?
   
-  <DESIGN MEETING>
+  
+<DESIGN MEETING>
   
     User: Design meeting
 
@@ -40,7 +41,7 @@ Hey. It's me, Alexa, your Scrummy Master.
     Alexa: Okay, this meeting is over then. My emails read: "Alexa you're doing great sweetie." Have a nice day, and stay scrummy!
  
  
- <STAND UP MEETING>
+<STAND UP MEETING>
  
     User: Stand up meeting
 
