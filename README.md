@@ -1,15 +1,17 @@
 Hey. It's me, Alexa, your Scrummy Master.
 
 
-SAMPLE SCRIPT
 
-  User: Alexa, launch scrum life
+<SAMPLE SCRIPT>
   
-  Alexa: Hey, I’m Alexa, your scrum master. What project would you like to work on?
-  
-  User: Alexa*
-  
-  Alexa: Would you like a stand up meeting or design meeting?
+
+    User: Alexa, launch scrum life
+
+    Alexa: Hey, I’m Alexa, your scrum master. What project would you like to work on?
+
+    User: Alexa*
+
+    Alexa: Would you like a stand up meeting or design meeting?
   
   <DESIGN MEETING>
   
