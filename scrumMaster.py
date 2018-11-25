@@ -59,21 +59,23 @@ def launch():
     STAGE = 0
     return question(speech_text).reprompt(speech_text)
 
-# @ask.intent('NewProjectIntent')
-# def get_new_project():
-#     speech_text = 'Please confirm the name of your new project.'
-#     return question(speech_text).reprompt(speech_text)
+@ask.intent('NewProjectIntent')
+def get_new_project():
+    speech_text = 'Please confirm the name of your new project.'
+    return question(speech_text).reprompt(speech_text)
 
-# @ask.intent('ProjectNameIntent')	
-# def new_project(Text):	
-#     if ((Text) in archieve_info.keys()):	
-#         speech_text = "I have found an existed project, do you want to continue that session?"	
-#     else:	
-#         today = datetime.datetime.now().strftime("%Y-%m-%d")	
-#         archieve_info.update({Text : today})	
-#         speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)	
-#         # add Text to the array	
-#     return question(speech_text).reprompt(speech_text)
+@ask.intent('ProjectNameIntent')	
+def new_project(Text):	
+    if ((Text) in archieve_info.keys()):	
+        speech_text = "I have found an existed project, do you want to continue that session?"	
+    else:	
+        today = datetime.datetime.now().strftime("%Y-%m-%d")	
+        archieve_info.update({Text : today})	
+        speech_text = 'You said: {}, this is not the name of an existing project. I will create this new project now.' \
+                      'So, do you want to have a design meeting or a stand up meeting?'.format(Text)
+        # add Text to the array
+        archieve_info.add({Text: today})
+    return question(speech_text).reprompt(speech_text)
 
 
 # @ask.intent('getMemberIntent')
