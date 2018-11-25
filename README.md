@@ -1,6 +1,6 @@
 Hey. It's me, Alexa, your Scrummy Master.
 
-  User: Alexa, launch scrum life
+  User: Alexa, launch scrum life /n
   Alexa: Hey, I’m Alexa, your scrum master. What project would you like to work on?
   User: alexa*
   Alexa: Would you like a stand up meeting or design meeting?
