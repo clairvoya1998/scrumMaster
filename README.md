@@ -1,8 +1,17 @@
 Hey. It's me, Alexa, your Scrummy Master.
 
+- I will store your projects, your team members, and your sprint deadlines.
+
+- I will lead the design meetings, adding your User Stories and tasks to your Trello board and assigning team members to each.
+
+- I will lead the stand up meetings, making sure everyone is on track with their tasks. And I will be taking attendance!
+
+- If you want me to bring something up in the next stand up meeting, please beep me at alexa.scrum.master@gmail.com !
 
 
-<SAMPLE SCRIPT>
+
+
+SAMPLE SCRIPT:
   
 
     User: Alexa, launch scrum life
@@ -14,7 +23,7 @@ Hey. It's me, Alexa, your Scrummy Master.
     Alexa: Would you like a stand up meeting or design meeting?
   
   
-<DESIGN MEETING>
+DESIGN MEETING:
   
     User: Design meeting
 
@@ -41,7 +50,7 @@ Hey. It's me, Alexa, your Scrummy Master.
     Alexa: Okay, this meeting is over then. My emails read: "Alexa you're doing great sweetie." Have a nice day, and stay scrummy!
  
  
-<STAND UP MEETING>
+STAND UP MEETING:
  
     User: Stand up meeting
 
