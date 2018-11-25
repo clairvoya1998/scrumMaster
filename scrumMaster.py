@@ -176,7 +176,7 @@ def no_intent():
         return question("Okay. Would you like to add another user story?")
     elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
         emails = readmail()
-        return statement("Okay. This meeting is over, then. My emails read: " + emails)
+        return statement("Okay. This meeting is over, then. My emails read: " + emails + "Have a nice day, and stay scrummy!")
     else:
         return statement("Bye")
 
