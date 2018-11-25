@@ -24,6 +24,9 @@ key = 'projects'
 obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
 archieve_info = pickle.loads(raw_data)
+
+archieve_minute = {}
+
 SECRET_STATE = ""
 last_user_story_id = -1
 
@@ -40,6 +43,9 @@ team_size = 3
 team_counter = 0
 team_members = ['Elsa', 'Ville', 'Amy']
 
+
+current_project_name = ""
+
 def set_teamCounter(num):
     global team_counter
     team_counter = num
@@ -47,17 +53,32 @@ def set_teamCounter(num):
 def get_teamCounter():
     return team_counter
 
-team_size = 0
-team_members = []
 
 @ask.launch
 def launch():
-    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a standup or design meeting?"
+    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. What project would you like to work on? for example, the project name is {project}"
     set_teamCounter(0)
     set_SECRET_STATE("")
     global STAGE
     STAGE = 0
     return question(speech_text).reprompt(speech_text)
+
+@ask.intent('ProjectNameIntent')
+def new_project(Text):
+    global current_project_name
+    current_project_name = Text
+
+    if ((Text) in archieve_info.keys()):
+        speech_text = "Great. Do you want to have a design meeting or a stand up meeting?"
+    else:
+        today = datetime.datetime.now().strftime("%Y-%m-%d")
+        archieve_info.update({Text : today})
+        speech_text = 'You said: {}, this is not the name of an existing project. I will create this new project now.' \
+                      'So, do you want to have a design meeting or a stand up meeting?'.format(Text)
+        # add Text to the array
+        archieve_info.add({Text: today})
+    return question(speech_text).reprompt(speech_text)
+
 
 # @ask.intent('NewProjectIntent')
 # def get_new_project():
@@ -106,18 +127,34 @@ def start_stand_up():
 def get_mydialog_state():
     return session['dialogState']
 
+def get_text(response):
+    osp = response._response['outputSpeech']
+    if osp['type'] == 'SSML':
+        return osp['ssml']
+    else:
+        return osp['text']
 
 @ask.intent('StandupRoutineIntent', convert= {"yesterday" : str, "today" : str, "problem" : str})
 def routine():
 
-    yesterday = routine_yesterday()
-    today = routine_today()
-    problem = routine_problem()
+    yesterday = get_text(routine_yesterday())
+    today = get_text(routine_today())
+    problem = get_text(routine_problem())
     speech_text = "Okay. "
 
     dialog_state = get_mydialog_state()
     if dialog_state != "COMPLETED":
         return delegate()
+
+    paricipant_name = str(participantsDict[team_members[team_counter-1]])
+    log.info(yesterday)
+    log.info(today)
+    log.info(problem)
+    line = "Yesterday, " + yesterday + ". Today, " + today + ". Problems, " + problem
+
+    archieve_minute.update({paricipant_name : line})
+
+
 
     if get_teamCounter()< team_size:
         speech_text = speech_text + "next, please confirm your attendance, " + get_name() + "?"
@@ -152,10 +189,10 @@ def yes_intent():
         return question(speech_text)
     elif get_dialog_state() == "ADD_TASK_OR_NOT":
         set_SECRET_STATE("READ_TASK_NAME")
-        return question("What should the task's title be?")
+        return question("What should the task's title be? for example saying the title is ...")
     elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
         set_SECRET_STATE("READ_USER_STORY_NAME")
-        return question("What should the user story's title be?")
+        return question("What should the user story's title be? for example saying the title is ...")
     else:
         return statement("Hi")
 
@@ -171,7 +208,7 @@ def no_intent():
             return statement(speech_text + " My emails read: " + emails)
     elif get_dialog_state() == "ADD_TASK_OR_NOT":
         set_SECRET_STATE("ADD_USER_STORY_OR_NOT")
-        return question("Okay. Would you like to add another user story?")
+        return question("Okay. Would you like to add another user story? ")
     elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
         emails = readmail()
         return statement("Okay. This meeting is over, then. My emails read: " + emails)
@@ -182,7 +219,7 @@ def trelloCount():
     tasks= getNumberOfTasksInSprint(participantsDict[team_members[team_counter-1]])
     word = "You have " + str(tasks['complete']) + " cOmpLeTe tasks, "
     if tasks['complete'] == 0:
-        word = word + "YOU BETTER WORK BITCH. "
+        word = word + "It's time for you to start working. "
     word = word + "You also have " + str(tasks['incomplete']) + " incOmpLeTe tasks remain. "
     return word
 
@@ -208,8 +245,8 @@ def problems():
 
 @ask.intent('DesignMeetingIntent')
 def start_design_meeting():
-    speech_text = "Excellent! I'm adding the first user story. What should it be called?"
-    set_SECRET_STATE = "READ_USER_STORY_NAME";
+    speech_text = "Excellent! I'm adding the first user story. What should it be called? please start with the phrase the title is"
+    set_SECRET_STATE("READ_USER_STORY_NAME")
     return question(speech_text).reprompt(speech_text)
 
 @ask.intent('SprintDateIntent')
@@ -225,28 +262,27 @@ def sprint_update():
 
 # TODO define an intent for reading a title
 @ask.intent('CardTitleIntent')
-def write_card_title():
-    name = "" #TODO what the user wants to call it
+def write_card_title(Text):
     speech_text = ""
     if SECRET_STATE == "READ_USER_STORY_NAME":
-        card_id = addUserStory(name, "")  #TODO add user story due date
+        card_id = addUserStory(Text, "")  #TODO add user story due date
+        global last_user_story_id
         last_user_story_id = card_id
-        speech_text = "I have added this to the product backlog. Now, who should we assign to this user story?"
+        speech_text = "I have added this to the product backlog. Now, who should we assign to this user story? for example {name} is assigned"
         set_SECRET_STATE("READ_ASSIGNEE_NAME")
     elif SECRET_STATE == "READ_TASK_NAME":
-        addTaskToUserStory(name, last_user_story_id)
+        addTaskToUserStory(Text, last_user_story_id)
         speech_text = "Task added to user story. Would you like to add another task for this user story?"
         set_SECRET_STATE("ADD_TASK_OR_NOT")
     return question(speech_text)
 
 # TODO define an intent for reading a person's name
-@ask.intent('NameIntent')
-def write_assignee_name():
-    name = ""   #TODO get from user
+@ask.intent('TaskNameIntent')
+def write_assignee_name(Name):
     speech_text = ""
     if SECRET_STATE == "READ_ASSIGNEE_NAME":
-        assignMemberToUserStory(participantsDict[name], last_user_story_id)
-        speech_text = "I have assigned " + name + " to this user story. Now, what task is required to complete ?"
+        assignMemberToUserStory(participantsDict[Name], last_user_story_id)
+        speech_text = "I have assigned " + Name + " to this user story. Now, what task is required to complete ?"
         set_SECRET_STATE("READ_TASK_NAME")
     return question(speech_text)
 
@@ -261,10 +297,14 @@ def help():
 @ask.session_ended
 def session_ended():
     data = pickle.dumps(archieve_info)
-    response = client.put_object(
-        Bucket=bucket,
-        Body= data,
-        Key=key)
+    minute = pickle.dumps(archieve_minute)
+    project_name = ""
+    if current_project_name is not None:
+        project_name = str(current_project_name)
+    daytime = datetime.date.today().strftime("%B %d, %Y") + "-- standup minute"
+    daytime = daytime + project_name
+    client.put_object(Bucket=bucket, Body= data, Key=key)
+    client.put_object(Bucket = bucket, Body = minute, Key = daytime)
     return "{}", 200
 
 
