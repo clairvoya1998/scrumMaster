@@ -19,7 +19,7 @@ log = logging.getLogger('flask_ask')
 bucket = 'scrummaster.oxfordhack'
 key = 'projects'
 
-#archieve_info = {'project_name1' : {'boardID' : '', 'sprint-finish' : '2018-01-01', 'participants': {'name1':'ID1', 'name2':'ID2'}}, 'project_name2': {}}
+#OLD ONE archieve_info = {'project_name1' : {'boardID' : '', 'sprint-finish' : '2018-01-01', 'participants': {'name1':'ID1', 'name2':'ID2'}}, 'project_name2': {}}
 #archieve_info = {'the scrum master': '2018-11-26'}
 obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
@@ -85,16 +85,18 @@ def new_project(Text):
 #     speech_text = 'Please confirm the name of your new project.'
 #     return question(speech_text).reprompt(speech_text)
 
-# @ask.intent('ProjectNameIntent')	
-# def new_project(Text):	
-#     if ((Text) in archieve_info.keys()):	
-#         speech_text = "I have found an existed project, do you want to continue that session?"	
-#     else:	
-#         today = datetime.datetime.now().strftime("%Y-%m-%d")	
-#         archieve_info.update({Text : today})	
-#         speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)	
-#         # add Text to the array	
-#     return question(speech_text).reprompt(speech_text)
+@ask.intent('ProjectNameIntent')	
+def new_project(Text):	
+    if ((Text) in archieve_info.keys()):	
+        speech_text = "Great. Do you want to have a design meeting or a stand up meeting?"	
+    else:	
+        today = datetime.datetime.now().strftime("%Y-%m-%d")	
+        archieve_info.update({Text : today})	
+        speech_text = 'You said: {}, this is not the name of an existing project. I will create this new project now.' \
+                      'So, do you want to have a design meeting or a stand up meeting?'.format(Text)
+        # add Text to the array
+        archieve_info.add({Text: today})
+    return question(speech_text).reprompt(speech_text)
 
 
 # @ask.intent('getMemberIntent')
@@ -185,7 +187,7 @@ def routine_today():
 def yes_intent():
     speech_text = "Good. "
     if get_dialog_state() == "ATTENDANCE":
-        speech_text = speech_text + trelloCount() + "Please say standup routine to continue. "
+        speech_text = speech_text + trelloCount() + "Please say stand up to continue. "
         return question(speech_text)
     elif get_dialog_state() == "ADD_TASK_OR_NOT":
         set_SECRET_STATE("READ_TASK_NAME")
@@ -211,7 +213,7 @@ def no_intent():
         return question("Okay. Would you like to add another user story? ")
     elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
         emails = readmail()
-        return statement("Okay. This meeting is over, then. My emails read: " + emails)
+        return statement("Okay. This meeting is over, then. My emails read: " + emails + "Have a nice day, and stay scrummy!")
     else:
         return statement("Bye")
 
@@ -240,7 +242,7 @@ def yesterday():
     return word1 + word
 
 def problems():
-    word = 'Any problem happened?'
+    word = 'Any blockers?'
     return word
 
 @ask.intent('DesignMeetingIntent')
@@ -282,7 +284,7 @@ def write_assignee_name(Name):
     speech_text = ""
     if SECRET_STATE == "READ_ASSIGNEE_NAME":
         assignMemberToUserStory(participantsDict[Name], last_user_story_id)
-        speech_text = "I have assigned " + Name + " to this user story. Now, what task is required to complete ?"
+        speech_text = "I have assigned " + Name + " to this user story. Now, what task is required to complete? for example the title is"
         set_SECRET_STATE("READ_TASK_NAME")
     return question(speech_text)
 
