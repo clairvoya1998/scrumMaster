@@ -81,9 +81,6 @@ def new_project(Text):
         # add Text to the array
     return question(speech_text).reprompt(speech_text)
 
-
-
-
 #STAND UP MEETING
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
@@ -196,13 +193,13 @@ def problems():
     return word
 
 
-@ask.intent("AttendanceIntent")
-def attendance(i):
-    speech_text = "<p>{}?</p>".format(team_members[i])
 
-    # check user says "Here"
-    # else "Oh no. user is not here."
-    return question(speech_text)
+
+
+
+
+
+
 
 
 @ask.intent('AMAZON.YesIntent')
