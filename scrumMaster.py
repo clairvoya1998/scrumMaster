@@ -94,31 +94,48 @@ def get_name():
 @ask.intent('StandUpMeetingIntent')
 def start_stand_up():
 
-    set_SECRET_STATE("STANDUP")
-
-    #standup_meeting = True
+    set_SECRET_STATE("ATTENDANCE")
     speech_text = "Great. It's time for the daily stand up. Let's take attendance. " + get_name() + "?"
     return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
 
-STAGE = 0
-def change_STAGE():
-    global STAGE
-    if (get_STAGE() == 0):
-        STAGE = 1
-    elif (get_STAGE() == 1):
-        STAGE = 2
-    elif (get_STAGE() == 2):
-        STAGE = 0
-        set_SECRET_STATE("ATTENDANCE")
+
+def get_mydialog_state():
+    return session['dialogState']
 
 
-def get_STAGE():
-    return STAGE
+@ask.intent('StandupRoutineIntent', convert= {"yesterday" : str, "today" : str, "problem" : str})
+def routine():
 
+    yesterday = routine_yesterday()
+    today = routine_today()
+    problem = routine_problem()
+    speech_text = "Okay. "
 
-@ask.intent('BlockIntent')
-def blockSave(Text):
-    client.put_object(Bucket = bucket, Body = pickle.dumps(Text), Key = 'Blocks')
+    dialog_state = get_mydialog_state()
+    if dialog_state != "COMPLETED":
+        return delegate()
+
+    if get_teamCounter()< team_size:
+        speech_text = speech_text + "next, please confirm your attendance, " + get_name() + "?"
+        return question(speech_text)
+    else:
+        emails = readmail()
+        return statement(speech_text + " My emails read: " + emails)
+
+@ask.intent('BlockIntent', convert={"problem" : str})
+def routine_problem():
+    routine_problem_prompt = problems()
+    return question(routine_problem_prompt)
+
+@ask.intent('yesterdayIntent', convert={"yesterday" : str})
+def routine_yesterday():
+    routine_yesterday_prompt = yesterday()
+    return question(routine_yesterday_prompt)
+
+@ask.intent('todayIntent', convert={"today" : str})
+def routine_today():
+    routine_today_prompt = today()
+    return question(routine_today_prompt)
 
 
 
@@ -127,54 +144,31 @@ def blockSave(Text):
 def yes_intent():
     speech_text = "Good. "
     if get_dialog_state() == "ATTENDANCE":
-        if team_counter != team_size:
-            set_SECRET_STATE("STANDUP")
-            speech_text = "SHUT UP. "
-            return question(speech_text + get_name())
-        else:
-            emails = readmail()
-            return statement(speech_text + " My emails read: " + emails)
-    elif get_dialog_state() == "STANDUP":
-        if get_STAGE() == 0:
-            change_STAGE()
-            return question(speech_text + yesterday())
-        elif get_STAGE() == 1:
-            change_STAGE()
-            return question(speech_text + today())
-        elif get_STAGE() == 2:
-            change_STAGE()
-            return question(speech_text + problems())
+        speech_text = speech_text + trelloCount() + "Please say standup routine to continue. "
+        return question(speech_text)
     else:
         return statement("Hi")
 
-
 @ask.intent('AMAZON.NoIntent')
 def no_intent():
-    speech_text = "What a shame. "
+    speech_text = "what a shame. "
     if get_dialog_state() == "ATTENDANCE":
-        if team_counter != team_size:
-            set_SECRET_STATE("STANDUP")
-            return question(speech_text + get_name())
+        if get_teamCounter() < team_size:
+            speech_text = speech_text + "next, please confirm your attendance, " + get_name() + "?"
+            return question(speech_text)
         else:
             emails = readmail()
             return statement(speech_text + " My emails read: " + emails)
-    elif get_dialog_state() == "STANDUP":
-        if get_STAGE() == 0:
-            #change_STAGE()
-            if (get_teamCounter() < team_size):
-                return question(speech_text + get_name())
-            else:
-                emails = readmail()
-                return statement(speech_text + " My emails read: " + emails)
-        elif get_STAGE() == 1:
-            change_STAGE()
-            return question(speech_text + today())
-        elif get_STAGE() == 2:
-            change_STAGE()
-            speech_text = "Good. "
-            return question(speech_text + problems())
     else:
         return statement("Bye")
+
+def trelloCount():
+    tasks= getNumberOfTasksInSprint(participantsDict[team_members[team_counter-1]])
+    word = "You have " + str(tasks['complete']) + " cOmpLeTe tasks, "
+    if tasks['complete'] == 0:
+        word = word + "YOU BETTER WORK BITCH. "
+    word = word + "You also have " + str(tasks['incomplete']) + " incOmpLeTe tasks remain. "
+    return word
 
 
 def today():
@@ -195,15 +189,6 @@ def yesterday():
 def problems():
     word = 'Any problem happened?'
     return word
-
-
-@ask.intent("AttendanceIntent")
-def attendance(i):
-    speech_text = "<p>{}?</p>".format(team_members[i])
-
-    # check user says "Here"
-    # else "Oh no. user is not here."
-    return question(speech_text)
 
 
 @ask.intent('SprintDateIntent')
