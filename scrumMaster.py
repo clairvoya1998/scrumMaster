@@ -25,6 +25,7 @@ obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
 archieve_info = pickle.loads(raw_data)
 SECRET_STATE = ""
+last_user_story_id = -1
 
 participantsDict = getParticipants("5bf94119b7c0ff5b494d440a")
 
@@ -46,38 +47,30 @@ def set_teamCounter(num):
 def get_teamCounter():
     return team_counter
 
+team_size = 0
+team_members = []
 
 @ask.launch
 def launch():
-    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. What's your project?"
+    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a standup or design meeting?"
     set_teamCounter(0)
     set_SECRET_STATE("")
     global STAGE
     STAGE = 0
     return question(speech_text).reprompt(speech_text)
 
-@ask.intent('NewProjectIntent')
-def get_new_project():
-    speech_text = 'Please confirm the name of your new project.'
-    return question(speech_text).reprompt(speech_text)
+# @ask.intent('NewProjectIntent')
+# def get_new_project():
+#     speech_text = 'Please confirm the name of your new project.'
+#     return question(speech_text).reprompt(speech_text)
 
 
-@ask.intent('ProjectNameIntent')
-def new_project(Text):
-    if ((Text) in archieve_info.keys()):
-        speech_text = "I have found an existed project, do you want to continue that session?"
-    else:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        archieve_info.update({Text : today})
-        speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)
-        # add Text to the array
-    return question(speech_text).reprompt(speech_text)
-
+# @ask.intent('getMemberIntent')
+# def get_new_member():
+#     speech_text = 'Please say the name of a new member'
+#     return statement(speech_text)
 
 #STAND UP MEETING
-#Alexa, where's my scrum master
-#Hello, what's your project
-#projectName
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
 
@@ -190,6 +183,11 @@ def problems():
     word = 'Any problem happened?'
     return word
 
+@ask.intent('DesignMeetingIntent')
+def start_design_meeting():
+    speech_text = "Excellent! I'm adding the first user story. What should it be called?"
+    set_SECRET_STATE = "READ_USER_STORY_NAME";
+    return question(speech_text).reprompt(speech_text)
 
 @ask.intent('SprintDateIntent')
 def sprint_update():
@@ -197,12 +195,10 @@ def sprint_update():
     tasks_left = 5
     return question('There are' + days_left + 'days left in the sprint and' + tasks_left + 'tasks left to accomplish')
 
-
-
-@ask.intent('HelloWorldIntent')
-def hello_world():
-    speech_text = 'Hello world'
-    return statement(speech_text)
+# @ask.intent('HelloWorldIntent')
+# def hello_world():
+#     speech_text = 'Hello world'
+#     return statement(speech_text)
 
 
 @ask.intent('AMAZON.HelpIntent')
