@@ -52,7 +52,7 @@ team_members = []
 
 @ask.launch
 def launch():
-    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a standup or design meeting?"
+    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a stand up or design meeting?"
     set_teamCounter(0)
     set_SECRET_STATE("")
     global STAGE
@@ -148,14 +148,14 @@ def routine_today():
 def yes_intent():
     speech_text = "Good. "
     if get_dialog_state() == "ATTENDANCE":
-        speech_text = speech_text + trelloCount() + "Please say standup routine to continue. "
+        speech_text = speech_text + trelloCount() + "Please say stand up to continue. "
         return question(speech_text)
     elif get_dialog_state() == "ADD_TASK_OR_NOT":
         set_SECRET_STATE("READ_TASK_NAME")
         return question("What should the task's title be?")
     elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
         set_SECRET_STATE("READ_USER_STORY_NAME")
-        return question("What should the user story's title be?")
+        return question("What is the user story's title?")
     else:
         return statement("Hi")
 
@@ -203,7 +203,7 @@ def yesterday():
     return word1 + word
 
 def problems():
-    word = 'Any problem happened?'
+    word = 'Any blockers?'
     return word
 
 @ask.intent('DesignMeetingIntent')
