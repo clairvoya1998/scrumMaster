@@ -248,7 +248,7 @@ def write_assignee_name():
     speech_text = ""
     if SECRET_STATE == "READ_ASSIGNEE_NAME":
         assignMemberToUserStory(participantsDict[name], last_user_story_id)
-        speech_text = "I have assigned " + name + " to this user story. Now, what task is required to complete ?"
+        speech_text = "I have assigned " + name + " to this user story. Now, what task shall I add to this user story?"
         set_SECRET_STATE("READ_TASK_NAME")
     return question(speech_text)
 
