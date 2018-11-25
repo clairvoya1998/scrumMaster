@@ -70,18 +70,6 @@ def launch():
 #     speech_text = 'Please say the name of a new member'
 #     return statement(speech_text)
 
-
-# @ask.intent('ProjectNameIntent')
-# def new_project(Text):
-#     if ((Text) in archieve_info.keys()):
-#         speech_text = "I have found an existed project, do you want to continue that session?"
-#     else:
-#         today = datetime.datetime.now().strftime("%Y-%m-%d")
-#         archieve_info.update({Text : today})
-#         speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)
-#         # add Text to the array
-#     return question(speech_text).reprompt(speech_text)
-
 #STAND UP MEETING
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
@@ -99,91 +87,81 @@ def get_name():
 @ask.intent('StandUpMeetingIntent')
 def start_stand_up():
 
-    set_SECRET_STATE("STANDUP")
-
-    #standup_meeting = True
+    set_SECRET_STATE("ATTENDANCE")
     speech_text = "Great. It's time for the daily stand up. Let's take attendance. " + get_name() + "?"
     return question(speech_text).reprompt(speech_text).simple_card('Attendance', speech_text)
 
-STAGE = 0
-def change_STAGE():
-    global STAGE
-    if (get_STAGE() == 0):
-        STAGE = 1
-    elif (get_STAGE() == 1):
-        STAGE = 2
-    elif (get_STAGE() == 2):
-        STAGE = 0
-        set_SECRET_STATE("ATTENDANCE")
+
+def get_mydialog_state():
+    return session['dialogState']
 
 
-def get_STAGE():
-    return STAGE
+@ask.intent('StandupRoutineIntent', convert= {"yesterday" : str, "today" : str, "problem" : str})
+def routine():
+
+    yesterday = routine_yesterday()
+    today = routine_today()
+    problem = routine_problem()
+    speech_text = "Okay. "
+
+    dialog_state = get_mydialog_state()
+    if dialog_state != "COMPLETED":
+        return delegate()
+
+    if get_teamCounter()< team_size:
+        speech_text = speech_text + "next, please confirm your attendance, " + get_name() + "?"
+        return question(speech_text)
+    else:
+        emails = readmail()
+        return statement(speech_text + " My emails read: " + emails)
+
+@ask.intent('BlockIntent', convert={"problem" : str})
+def routine_problem():
+    routine_problem_prompt = problems()
+    return question(routine_problem_prompt)
+
+@ask.intent('yesterdayIntent', convert={"yesterday" : str})
+def routine_yesterday():
+    routine_yesterday_prompt = yesterday()
+    return question(routine_yesterday_prompt)
+
+@ask.intent('todayIntent', convert={"today" : str})
+def routine_today():
+    routine_today_prompt = today()
+    return question(routine_today_prompt)
+
+
+
 
 @ask.intent('AMAZON.YesIntent')
 def yes_intent():
     speech_text = "Good. "
     if get_dialog_state() == "ATTENDANCE":
-        if team_counter != team_size:
-            set_SECRET_STATE("STANDUP")
-            speech_text = "SHUT UP. "
-            return question(speech_text + get_name())
-        else:
-            emails = readmail()
-            return statement(speech_text + " My emails read: " + emails)
-    elif get_dialog_state() == "STANDUP":
-        if get_STAGE() == 0:
-            change_STAGE()
-            return question(speech_text + yesterday())
-        elif get_STAGE() == 1:
-            change_STAGE()
-            return question(speech_text + today())
-        elif get_STAGE() == 2:
-            change_STAGE()
-            return question(speech_text + problems())
-    elif get_dialog_state() == "ADD_TASK_OR_NOT":
-        set_SECRET_STATE("READ_TASK_NAME")
-        return question("What should the task's title be?")
-    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
-        set_SECRET_STATE("READ_USER_STORY_NAME")
-        return question("What should the user story's title be?")
+        speech_text = speech_text + trelloCount() + "Please say standup routine to continue. "
+        return question(speech_text)
     else:
         return statement("Hi")
 
-
 @ask.intent('AMAZON.NoIntent')
 def no_intent():
-    speech_text = "What a shame. "
+    speech_text = "what a shame. "
     if get_dialog_state() == "ATTENDANCE":
-        if team_counter != team_size:
-            set_SECRET_STATE("STANDUP")
-            return question(speech_text + get_name())
+        if get_teamCounter() < team_size:
+            speech_text = speech_text + "next, please confirm your attendance, " + get_name() + "?"
+            return question(speech_text)
         else:
             emails = readmail()
             return statement(speech_text + " My emails read: " + emails)
-    elif get_dialog_state() == "STANDUP":
-        if get_STAGE() == 0:
-            #change_STAGE()
-            if (get_teamCounter() < team_size):
-                return question(speech_text + get_name())
-            else:
-                emails = readmail()
-                return statement(speech_text + " My emails read: " + emails)
-        elif get_STAGE() == 1:
-            change_STAGE()
-            return question(speech_text + today())
-        elif get_STAGE() == 2:
-            change_STAGE()
-            speech_text = "Good. "
-            return question(speech_text + problems())
-    elif get_dialog_state() == "ADD_TASK_OR_NOT":
-        set_SECRET_STATE("ADD_USER_STORY_OR_NOT")
-        return question("Okay. Would you like to add another user story?")
-    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
-        emails = readmail()
-        return statement("Okay. This meeting is over, then. My emails read: " + emails)
     else:
         return statement("Bye")
+
+def trelloCount():
+    tasks= getNumberOfTasksInSprint(participantsDict[team_members[team_counter-1]])
+    word = "You have " + str(tasks['complete']) + " cOmpLeTe tasks, "
+    if tasks['complete'] == 0:
+        word = word + "YOU BETTER WORK BITCH. "
+    word = word + "You also have " + str(tasks['incomplete']) + " incOmpLeTe tasks remain. "
+    return word
 
 
 def today():
@@ -210,46 +188,6 @@ def start_design_meeting():
     speech_text = "Excellent! I'm adding the first user story. What should it be called?"
     set_SECRET_STATE = "READ_USER_STORY_NAME";
     return question(speech_text).reprompt(speech_text)
-
-# TODO define an intent for reading a title
-@ask.intent('CardTitleIntent')
-def write_card_title():
-    name = "" #TODO what the user wants to call it
-    speech_text = ""
-    if SECRET_STATE == "READ_USER_STORY_NAME":
-        card_id = addUserStory(name, "")  #TODO add user story due date
-        last_user_story_id = card_id
-        speech_text = "I have added this to the product backlog. Now, who should we assign to this user story?"
-        set_SECRET_STATE("READ_ASSIGNEE_NAME")
-    elif SECRET_STATE == "READ_TASK_NAME":
-        addTaskToUserStory(name, last_user_story_id)
-        speech_text = "Task added to user story. Would you like to add another task for this user story?"
-        set_SECRET_STATE("ADD_TASK_OR_NOT")
-    return question(speech_text)
-
-# TODO define an intent for reading a person's name
-@ask.intent('NameIntent')
-def write_assignee_name():
-    name = ""   #TODO get from user
-    speech_text = ""
-    if SECRET_STATE == "READ_ASSIGNEE_NAME":
-        assignMemberToUserStory(participantsDict[name], last_user_story_id)
-        speech_text = "I have assigned " + name + " to this user story. Now, what task is required to complete ?"
-        set_SECRET_STATE("READ_TASK_NAME")
-    return question(speech_text)
-
-
-
-
-@ask.intent('AMAZON.YesIntent')
-def yes_intent():
-    return statement("Hi")
-
-
-@ask.intent('AMAZON.NoIntent')
-def no_intent():
-    return statement("What a shame.")
-
 
 @ask.intent('SprintDateIntent')
 def sprint_update():
