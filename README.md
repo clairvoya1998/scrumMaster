@@ -20,7 +20,7 @@ SAMPLE SCRIPT:
 
     User: The project name is Alexa*
 
-    Alexa: Would you like a stand up meeting or design meeting?
+    Alexa: Great. Would you like a stand up meeting or design meeting?
   
   
 DESIGN MEETING:
