@@ -139,6 +139,12 @@ def yes_intent():
     if get_dialog_state() == "ATTENDANCE":
         speech_text = speech_text + trelloCount() + "Please say standup routine to continue. "
         return question(speech_text)
+    elif get_dialog_state() == "ADD_TASK_OR_NOT":
+        set_SECRET_STATE("READ_TASK_NAME")
+        return question("What should the task's title be?")
+    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
+        set_SECRET_STATE("READ_USER_STORY_NAME")
+        return question("What should the user story's title be?")
     else:
         return statement("Hi")
 
@@ -152,6 +158,12 @@ def no_intent():
         else:
             emails = readmail()
             return statement(speech_text + " My emails read: " + emails)
+    elif get_dialog_state() == "ADD_TASK_OR_NOT":
+        set_SECRET_STATE("ADD_USER_STORY_OR_NOT")
+        return question("Okay. Would you like to add another user story?")
+    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
+        emails = readmail()
+        return statement("Okay. This meeting is over, then. My emails read: " + emails)
     else:
         return statement("Bye")
 
@@ -199,6 +211,33 @@ def sprint_update():
 # def hello_world():
 #     speech_text = 'Hello world'
 #     return statement(speech_text)
+
+# TODO define an intent for reading a title
+@ask.intent('CardTitleIntent')
+def write_card_title():
+    name = "" #TODO what the user wants to call it
+    speech_text = ""
+    if SECRET_STATE == "READ_USER_STORY_NAME":
+        card_id = addUserStory(name, "")  #TODO add user story due date
+        last_user_story_id = card_id
+        speech_text = "I have added this to the product backlog. Now, who should we assign to this user story?"
+        set_SECRET_STATE("READ_ASSIGNEE_NAME")
+    elif SECRET_STATE == "READ_TASK_NAME":
+        addTaskToUserStory(name, last_user_story_id)
+        speech_text = "Task added to user story. Would you like to add another task for this user story?"
+        set_SECRET_STATE("ADD_TASK_OR_NOT")
+    return question(speech_text)
+
+# TODO define an intent for reading a person's name
+@ask.intent('NameIntent')
+def write_assignee_name():
+    name = ""   #TODO get from user
+    speech_text = ""
+    if SECRET_STATE == "READ_ASSIGNEE_NAME":
+        assignMemberToUserStory(participantsDict[name], last_user_story_id)
+        speech_text = "I have assigned " + name + " to this user story. Now, what task is required to complete ?"
+        set_SECRET_STATE("READ_TASK_NAME")
+    return question(speech_text)
 
 
 @ask.intent('AMAZON.HelpIntent')
