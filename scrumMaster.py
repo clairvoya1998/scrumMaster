@@ -46,6 +46,8 @@ def set_teamCounter(num):
 def get_teamCounter():
     return team_counter
 
+team_size = 0
+team_members = [] 
 
 @ask.launch
 def launch():
@@ -60,6 +62,12 @@ def launch():
 def get_new_project():
     speech_text = 'Please confirm the name of your new project.'
     return question(speech_text).reprompt(speech_text)
+
+
+@ask.intent('getMemberIntent')
+def get_new_member():
+    speech_text = 'Please say the name of a new member'
+    return statement(speech_text)
 
 
 @ask.intent('ProjectNameIntent')
@@ -77,9 +85,6 @@ def new_project(Text):
 
 
 #STAND UP MEETING
-#Alexa, where's my scrum master
-#Hello, what's your project
-#projectName
 #IF NOT END OF SPRINT
 #i THINK it's time for a stand up meeting
 
@@ -200,13 +205,21 @@ def attendance(i):
     return question(speech_text)
 
 
+@ask.intent('AMAZON.YesIntent')
+def yes_intent():
+    return statement("Hi")
+
+
+@ask.intent('AMAZON.NoIntent')
+def no_intent():
+    return statement("What a shame.")
+
+
 @ask.intent('SprintDateIntent')
 def sprint_update():
     days_left = 5 # sprint end date - current date
     tasks_left = 5
     return question('There are' + days_left + 'days left in the sprint and' + tasks_left + 'tasks left to accomplish')
-
-
 
 @ask.intent('HelloWorldIntent')
 def hello_world():
