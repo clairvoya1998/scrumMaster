@@ -19,7 +19,7 @@ log = logging.getLogger('flask_ask')
 bucket = 'scrummaster.oxfordhack'
 key = 'projects'
 
-#archieve_info = {'project_name1' : {'boardID' : '', 'sprint-finish' : '2018-01-01', 'participants': {'name1':'ID1', 'name2':'ID2'}}, 'project_name2': {}}
+#OLD ONE archieve_info = {'project_name1' : {'boardID' : '', 'sprint-finish' : '2018-01-01', 'participants': {'name1':'ID1', 'name2':'ID2'}}, 'project_name2': {}}
 #archieve_info = {'the scrum master': '2018-11-26'}
 obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
@@ -52,22 +52,22 @@ team_members = []
 
 @ask.launch
 def launch():
-    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a stand up or design meeting?"
+    speech_text = "Hey guys. I'm Alexa, your Scrum Master. What project would you like to work on?"
     set_teamCounter(0)
     set_SECRET_STATE("")
     global STAGE
     STAGE = 0
     return question(speech_text).reprompt(speech_text)
 
-@ask.intent('NewProjectIntent')
-def get_new_project():
-    speech_text = 'Please confirm the name of your new project.'
-    return question(speech_text).reprompt(speech_text)
+# @ask.intent('NewProjectIntent')
+# def get_new_project():
+#     speech_text = 'Please confirm the name of your new project.'
+#     return question(speech_text).reprompt(speech_text)
 
 @ask.intent('ProjectNameIntent')	
 def new_project(Text):	
     if ((Text) in archieve_info.keys()):	
-        speech_text = "I have found an existed project, do you want to continue that session?"	
+        speech_text = "Great. Do you want to have a design meeting or a stand up meeting?"	
     else:	
         today = datetime.datetime.now().strftime("%Y-%m-%d")	
         archieve_info.update({Text : today})	
