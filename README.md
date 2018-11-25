@@ -37,9 +37,9 @@ DESIGN MEETING:
 
     Alexa: I have assigned Alexa to this user story. Now, what task shall I add to this User Story?
 
-    User: The task is "be scrummy"
+    User: The task is "feed the cat"
     
-    Alexa: Task added to user story. Would you like to add another task for this User Story?
+    Alexa: Task added to user story. Would you like to add a task for this User Story?
     
     User: No
     
