@@ -25,6 +25,7 @@ obj = client.get_object(Bucket=bucket, Key=key)
 raw_data = obj['Body'].read()
 archieve_info = pickle.loads(raw_data)
 SECRET_STATE = ""
+last_user_story_id = -1
 
 participantsDict = getParticipants("5bf94119b7c0ff5b494d440a")
 
@@ -47,39 +48,39 @@ def get_teamCounter():
     return team_counter
 
 team_size = 0
-team_members = [] 
+team_members = []
 
 @ask.launch
 def launch():
-    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. What's your project?"
+    speech_text = "Hey guys. Here I am, Alexa, your Scrum Master. Do you want to have a standup or design meeting?"
     set_teamCounter(0)
     set_SECRET_STATE("")
     global STAGE
     STAGE = 0
     return question(speech_text).reprompt(speech_text)
 
-@ask.intent('NewProjectIntent')
-def get_new_project():
-    speech_text = 'Please confirm the name of your new project.'
-    return question(speech_text).reprompt(speech_text)
+# @ask.intent('NewProjectIntent')
+# def get_new_project():
+#     speech_text = 'Please confirm the name of your new project.'
+#     return question(speech_text).reprompt(speech_text)
 
 
-@ask.intent('getMemberIntent')
-def get_new_member():
-    speech_text = 'Please say the name of a new member'
-    return statement(speech_text)
+# @ask.intent('getMemberIntent')
+# def get_new_member():
+#     speech_text = 'Please say the name of a new member'
+#     return statement(speech_text)
 
 
-@ask.intent('ProjectNameIntent')
-def new_project(Text):
-    if ((Text) in archieve_info.keys()):
-        speech_text = "I have found an existed project, do you want to continue that session?"
-    else:
-        today = datetime.datetime.now().strftime("%Y-%m-%d")
-        archieve_info.update({Text : today})
-        speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)
-        # add Text to the array
-    return question(speech_text).reprompt(speech_text)
+# @ask.intent('ProjectNameIntent')
+# def new_project(Text):
+#     if ((Text) in archieve_info.keys()):
+#         speech_text = "I have found an existed project, do you want to continue that session?"
+#     else:
+#         today = datetime.datetime.now().strftime("%Y-%m-%d")
+#         archieve_info.update({Text : today})
+#         speech_text = 'You said: {}, what a great name, shall we start the sprint?'.format(Text)
+#         # add Text to the array
+#     return question(speech_text).reprompt(speech_text)
 
 #STAND UP MEETING
 #IF NOT END OF SPRINT
@@ -140,6 +141,12 @@ def yes_intent():
         elif get_STAGE() == 2:
             change_STAGE()
             return question(speech_text + problems())
+    elif get_dialog_state() == "ADD_TASK_OR_NOT":
+        set_SECRET_STATE("READ_TASK_NAME")
+        return question("What should the task's title be?")
+    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
+        set_SECRET_STATE("READ_USER_STORY_NAME")
+        return question("What should the user story's title be?")
     else:
         return statement("Hi")
 
@@ -169,6 +176,12 @@ def no_intent():
             change_STAGE()
             speech_text = "Good. "
             return question(speech_text + problems())
+    elif get_dialog_state() == "ADD_TASK_OR_NOT":
+        set_SECRET_STATE("ADD_USER_STORY_OR_NOT")
+        return question("Okay. Would you like to add another user story?")
+    elif get_dialog_state() == "ADD_USER_STORY_OR_NOT":
+        emails = readmail()
+        return statement("Okay. This meeting is over, then. My emails read: " + emails)
     else:
         return statement("Bye")
 
@@ -192,12 +205,38 @@ def problems():
     word = 'Any problem happened?'
     return word
 
+@ask.intent('DesignMeetingIntent')
+def start_design_meeting():
+    speech_text = "Excellent! I'm adding the first user story. What should it be called?"
+    set_SECRET_STATE = "READ_USER_STORY_NAME";
+    return question(speech_text).reprompt(speech_text)
 
+# TODO define an intent for reading a title
+@ask.intent('CardTitleIntent')
+def write_card_title():
+    name = "" #TODO what the user wants to call it
+    speech_text = ""
+    if SECRET_STATE == "READ_USER_STORY_NAME":
+        card_id = addUserStory(name, "")  #TODO add user story due date
+        last_user_story_id = card_id
+        speech_text = "I have added this to the product backlog. Now, who should we assign to this user story?"
+        set_SECRET_STATE("READ_ASSIGNEE_NAME")
+    elif SECRET_STATE == "READ_TASK_NAME":
+        addTaskToUserStory(name, last_user_story_id)
+        speech_text = "Task added to user story. Would you like to add another task for this user story?"
+        set_SECRET_STATE("ADD_TASK_OR_NOT")
+    return question(speech_text)
 
-
-
-
-
+# TODO define an intent for reading a person's name
+@ask.intent('NameIntent')
+def write_assignee_name():
+    name = ""   #TODO get from user
+    speech_text = ""
+    if SECRET_STATE == "READ_ASSIGNEE_NAME":
+        assignMemberToUserStory(participantsDict[name], last_user_story_id)
+        speech_text = "I have assigned " + name + " to this user story. Now, what task is required to complete ?"
+        set_SECRET_STATE("READ_TASK_NAME")
+    return question(speech_text)
 
 
 
@@ -218,10 +257,10 @@ def sprint_update():
     tasks_left = 5
     return question('There are' + days_left + 'days left in the sprint and' + tasks_left + 'tasks left to accomplish')
 
-@ask.intent('HelloWorldIntent')
-def hello_world():
-    speech_text = 'Hello world'
-    return statement(speech_text)
+# @ask.intent('HelloWorldIntent')
+# def hello_world():
+#     speech_text = 'Hello world'
+#     return statement(speech_text)
 
 
 @ask.intent('AMAZON.HelpIntent')
