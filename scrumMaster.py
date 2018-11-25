@@ -74,8 +74,6 @@ def new_project(Text):
     return question(speech_text).reprompt(speech_text)
 
 
-
-
 #STAND UP MEETING
 #Alexa, where's my scrum master
 #Hello, what's your project
@@ -116,6 +114,14 @@ def change_STAGE():
 
 def get_STAGE():
     return STAGE
+
+
+@ask.intent('BlockIntent')
+def blockSave(Text):
+    client.put_object(Bucket = bucket, Body = pickle.dumps(Text), Key = 'Blocks')
+
+
+
 
 @ask.intent('AMAZON.YesIntent')
 def yes_intent():
