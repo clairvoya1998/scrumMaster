@@ -1,5 +1,6 @@
 import email
 import imaplib
+import sys
 
 EMAIL_PROVIDER   = "@gmail.com"
 EMAIL_ADDRESS  = "alexa.scrum.master" + EMAIL_PROVIDER
@@ -22,6 +23,7 @@ def readmail():
     mail_ids = data[0]
     id_list = mail_ids.split()
 
+    text = ""
     for i in id_list:
         mail.store(i, '+FLAGS', '\Seen')
         result, data = mail.fetch(i, "(RFC822)")
@@ -29,7 +31,10 @@ def readmail():
         #print(raw_email)
 
         email_message = email.message_from_string(raw_email)
-        print(get_first_text_block(email_message))
+        text += get_first_text_block(email_message)
+    if text == "":
+        return "No unread emails"
+    return text
 
 def get_first_text_block(email_message_instance):
     maintype = email_message_instance.get_content_maintype()
